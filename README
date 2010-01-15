@@ -1,0 +1,153 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2927
+
+Functionality in this script has been superseded by Multi-Replace.
+Refer to http://www.vim.org/scripts/script.php?script_id=2938
+
+-------------------------------------------------------------
+
+This script provides two replacement capabilities, both involving a second buffer.
+
+[=] OVERVIEW
+
+1. DICTIONARY REPLACE
+=====================
+Replace words according to a tab-separated list of word-pairs.
+Words on the left of the tab are the words to search for, 
+words on the right are the corresponding replacements.
+
+Example:
+  1. %s
+  2. %s
+  3. %b
+  [BEFORE]===============
+  1. stars
+  2. stars
+  3. breasts
+  [AFTER]================
+
+Typical use: 
+- Variable substitution on a template.
+- Performing a join on two lists
+- Reording lines given orderd list of keys
+
+2. LIST REPLACE
+===============
+Replace matches using text from line matching
+order of appearance.
+
+Example:
+  1. %f are good for your body.
+  2. %v are bad for your body.
+  3. %f are good for your body.
+  4. %v are bad for your body.
+  5. %f are good for your body.
+  6. %v are bad for your body.
+  [BEFORE]===============
+  1. apples are good for your body.
+  2. %v are bad for your body.
+  3. vegetables are good for your body.
+  4. %v are bad for your body.
+  5. vitamins are good for your body.
+  6. %v are bad for your body.
+  [AFTER]================
+
+Typical use: 
+- Repeating blocks of code with different identtifiers
+- Intersparsing lines from a file with lines from another file
+
+[=] USAGE
+
+1. DICTIONARY REPLACE
+=====================
+
+Let's say we have some text.
+  =====================
+  your eyes are like stars kissing the breasts of the galaxies.
+  your %e are like %s kissing the %b of the galaxies.
+  1. %s
+  2. %s
+  3. %b
+  4. %s
+  5. %b
+  6. %e
+  7. %e
+  [TEXT]================
+
+In a separate buffer, prepare a list of tab-separated words. Make sure
+that the pairs are sperated by tabs and not space characters!
+  =====================
+  breasts	stars
+  eyes	breasts
+  stars	eyes
+  %s	stars
+  %b	breasts
+  %e	eyes
+  [DICT]================
+
+In the alternate buffer, runthe command ",dict" 
+(comma-dict) standing for "dictionary".
+  ,dict
+
+Now go back to our text buffer, and do a selection to match all words. Only words matching current search pattern are replaced.
+  /\S\+
+
+Run the command ",rict" (comma-rict) standing for "replace dictionary".
+  =====================
+  your breasts are like eyes kissing the stars of the galaxies.
+  your eyes are like stars kissing the breasts of the galaxies.
+  1. stars
+  2. stars
+  3. breasts
+  4. stars
+  5. breasts
+  6. eyes
+  7. eyes
+  [TEXT]=[+]=============
+
+Limitation: 
+Replacements are only done on words matching 
+the current search pattern. This is not a true
+multi-replace solution, but more efficient.
+
+2. List Replace
+===============
+
+Let's say we have some text.
+  =====================
+  1. %f are good for your body.
+  2. %v are bad for your body.
+  3. %f are good for your body.
+  4. %v are bad for your body.
+  5. %f are good for your body.
+  6. %v are bad for your body.
+  [TEXT]================
+
+In a separate buffer, the list for replacement.
+Make sure there are enough rows to match target
+text!
+  =====================
+  apples
+  vegetables
+  vitamins
+  [DICT]================
+
+In the alternate buffer, runthe command ",list" 
+(comma-list) standing for "list".
+  ,list
+
+Now go back to our text buffer, and do a selection
+to match %f which we want to replace.
+  /%f
+
+Run the command ",rist" (comma-rist) standing for "replace list".
+  =====================
+  1. apples are good for your body.
+  2. %v are bad for your body.
+  3. vegetables are good for your body.
+  4. %v are bad for your body.
+  5. vitamins are good for your body.
+  6. %v are bad for your body.
+  [TEXT]=[+]=============
+
+Limitation: 
+Matches on the same line are replaced with the same string. There's no option to choose to replace with the next string right now.
